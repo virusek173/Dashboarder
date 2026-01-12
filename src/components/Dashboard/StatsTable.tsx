@@ -10,6 +10,14 @@ interface StatsTableProps {
 }
 
 export function StatsTable({ data }: StatsTableProps) {
+  const totalCompletedTickets = data.reduce((sum, row) => sum + row.completedTickets, 0);
+  const totalAllTickets = data.reduce((sum, row) => sum + row.totalTickets, 0);
+  const totalCompletedSP = data.reduce((sum, row) => sum + row.completedStoryPoints, 0);
+  const totalAllSP = data.reduce((sum, row) => sum + row.totalStoryPoints, 0);
+  const averageProgress = data.length > 0
+    ? data.reduce((sum, row) => sum + row.progressPercent, 0) / data.length
+    : 0;
+
   return (
     <div className="overflow-x-auto overflow-y-visible">
       <table className="w-full border-collapse">
@@ -66,9 +74,37 @@ export function StatsTable({ data }: StatsTableProps) {
               </td>
             </tr>
           ) : (
-            data.map((row, index) => (
-              <TableRow key={row.id} data={row} index={index} />
-            ))
+            <>
+              {data.map((row, index) => (
+                <TableRow key={row.id} data={row} index={index} />
+              ))}
+              <tr className="bg-deep-navy border-t-2 border-accent-blue font-semibold">
+                <td className="px-4 py-3 text-left text-text-primary">
+                  Summary
+                </td>
+                <td className="px-4 py-3 text-center text-text-primary">
+                  {totalCompletedTickets}
+                </td>
+                <td className="px-4 py-3 text-center text-text-primary">
+                  {totalAllTickets}
+                </td>
+                <td className="px-4 py-3 text-center text-text-primary">
+                  {totalCompletedSP}
+                </td>
+                <td className="px-4 py-3 text-center text-text-primary">
+                  {totalAllSP}
+                </td>
+                <td className="px-4 py-3 text-center text-text-muted">
+                  -
+                </td>
+                <td className="px-4 py-3 text-center text-text-muted">
+                  -
+                </td>
+                <td className="px-4 py-3 text-center text-text-primary">
+                  {averageProgress.toFixed(1)}%
+                </td>
+              </tr>
+            </>
           )}
         </tbody>
       </table>
