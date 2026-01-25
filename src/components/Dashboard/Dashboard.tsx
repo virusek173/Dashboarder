@@ -12,6 +12,7 @@ import { tabsConfig } from '@/data/tabConfig';
 
 const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || '';
 const releaseNumber = process.env.NEXT_PUBLIC_RELEASE_NUMBER || '';
+const teamIcon = process.env.NEXT_PUBLIC_TEAM_ICON || '';
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('displays');
@@ -55,7 +56,8 @@ export function Dashboard() {
     <div className="min-h-screen bg-bg-primary p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-text-primary">
+          <h1 className="text-3xl font-bold text-text-primary flex items-center gap-2">
+            {teamIcon && <span>{teamIcon}</span>}
             {teamName} TEAM RELEASE {releaseNumber} PROGRESS DASHBOARD
           </h1>
           <div className="flex items-center gap-4">
