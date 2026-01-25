@@ -3,13 +3,15 @@
 import { RowData } from '@/types';
 import { TableRow } from './TableRow';
 import { Tooltip } from './Tooltip';
+import { StoryPointsProgress } from './StoryPointsProgress';
 import { COLUMN_HEADERS, COLUMN_TOOLTIPS } from '@/lib/constants';
 
 interface StatsTableProps {
   data: RowData[];
+  showSummary?: boolean;
 }
 
-export function StatsTable({ data }: StatsTableProps) {
+export function StatsTable({ data, showSummary = true }: StatsTableProps) {
   const totalCompletedTickets = data.reduce((sum, row) => sum + row.completedTickets, 0);
   const totalAllTickets = data.reduce((sum, row) => sum + row.totalTickets, 0);
   const totalCompletedSP = data.reduce((sum, row) => sum + row.completedStoryPoints, 0);
@@ -24,11 +26,12 @@ export function StatsTable({ data }: StatsTableProps) {
   const summaryUrl = jiraBaseUrl ? `${jiraBaseUrl}/issues/?jql=${encodeURIComponent(summaryJql)}` : null;
 
   return (
-    <div className="overflow-x-auto overflow-y-visible">
-      <table className="w-full border-collapse">
+    <div>
+      <div className="overflow-x-auto overflow-y-visible">
+        <table className="w-full border-collapse">
         <thead>
           <tr className="bg-deep-navy border-b border-tertiary-blue">
-            <th className="px-4 py-3 text-left text-text-primary font-semibold overflow-visible">
+            <th className="px-4 py-3 text-left text-text-primary font-semibold overflow-visible rounded-tl-lg">
               {COLUMN_HEADERS.label}
             </th>
             <th className="px-4 py-3 text-center text-text-primary font-semibold overflow-visible">
@@ -61,7 +64,7 @@ export function StatsTable({ data }: StatsTableProps) {
                 <span className="cursor-help">{COLUMN_HEADERS.workingDays}</span>
               </Tooltip>
             </th>
-            <th className="px-4 py-3 text-center text-text-primary font-semibold overflow-visible">
+            <th className="px-4 py-3 text-center text-text-primary font-semibold overflow-visible rounded-tr-lg">
               <Tooltip content={COLUMN_TOOLTIPS.progress}>
                 <span className="cursor-help">{COLUMN_HEADERS.progress}</span>
               </Tooltip>
@@ -81,49 +84,64 @@ export function StatsTable({ data }: StatsTableProps) {
           ) : (
             <>
               {data.map((row, index) => (
-                <TableRow key={row.id} data={row} index={index} />
+                <TableRow
+                  key={row.id}
+                  data={row}
+                  index={index}
+                  isLastRow={!showSummary && index === data.length - 1}
+                />
               ))}
-              <tr className="bg-deep-navy border-t-2 border-accent-blue font-semibold">
-                <td className="px-4 py-3 text-left text-text-primary">
-                  {summaryUrl ? (
-                    <a
-                      href={summaryUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-accent-blue hover:underline transition-smooth"
-                    >
-                      Summary
-                    </a>
-                  ) : (
-                    'Summary'
-                  )}
-                </td>
-                <td className="px-4 py-3 text-center text-text-primary">
-                  {totalCompletedTickets}
-                </td>
-                <td className="px-4 py-3 text-center text-text-primary">
-                  {totalAllTickets}
-                </td>
-                <td className="px-4 py-3 text-center text-text-primary">
-                  {totalCompletedSP}
-                </td>
-                <td className="px-4 py-3 text-center text-text-primary">
-                  {totalAllSP}
-                </td>
-                <td className="px-4 py-3 text-center text-text-muted">
-                  -
-                </td>
-                <td className="px-4 py-3 text-center text-text-muted">
-                  -
-                </td>
-                <td className="px-4 py-3 text-center text-text-primary">
-                  {averageProgress.toFixed(1)}%
-                </td>
-              </tr>
+              {showSummary && (
+                <tr className="bg-deep-navy border-y-2 border-tertiary font-semibold">
+                  <td className="px-4 py-3 text-left text-text-primary">
+                    {summaryUrl ? (
+                      <a
+                        href={summaryUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-accent-blue hover:underline transition-smooth"
+                      >
+                        Summary
+                      </a>
+                    ) : (
+                      'Summary'
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center text-text-primary">
+                    {totalCompletedTickets}
+                  </td>
+                  <td className="px-4 py-3 text-center text-text-primary">
+                    {totalAllTickets}
+                  </td>
+                  <td className="px-4 py-3 text-center text-text-primary">
+                    {totalCompletedSP}
+                  </td>
+                  <td className="px-4 py-3 text-center text-text-primary">
+                    {totalAllSP}
+                  </td>
+                  <td className="px-4 py-3 text-center text-text-muted">
+                    -
+                  </td>
+                  <td className="px-4 py-3 text-center text-text-muted">
+                    -
+                  </td>
+                  <td className="px-4 py-3 text-center text-text-primary">
+                    {averageProgress.toFixed(1)}%
+                  </td>
+                </tr>
+              )}
             </>
           )}
         </tbody>
       </table>
+      </div>
+
+      {data.length > 0 && showSummary && (
+        <StoryPointsProgress
+          completedSP={totalCompletedSP}
+          totalSP={totalAllSP}
+        />
+      )}
     </div>
   );
 }

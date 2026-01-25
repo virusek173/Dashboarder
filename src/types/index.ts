@@ -40,6 +40,7 @@ export interface TabConfig {
   id: string;
   label: string;
   rows: RowConfig[];
+  showSummary?: boolean;
 }
 
 export interface RowConfig {

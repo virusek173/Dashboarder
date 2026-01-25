@@ -30,9 +30,10 @@ function buildJiraUrl(baseUrl: string | undefined, data: RowData): string | null
 interface TableRowProps {
   data: RowData;
   index: number;
+  isLastRow?: boolean;
 }
 
-export function TableRow({ data, index }: TableRowProps) {
+export function TableRow({ data, index, isLastRow = false }: TableRowProps) {
   const workingDaysRemaining = Math.max(0, calculateWorkingDays(data.deadline));
   const daysColor = getWorkingDaysColor(workingDaysRemaining);
   const isEven = index % 2 === 0;
@@ -46,7 +47,7 @@ export function TableRow({ data, index }: TableRowProps) {
         isEven ? 'bg-bg-secondary' : 'bg-bg-primary'
       }`}
     >
-      <td className="px-4 py-3 text-text-primary font-medium">
+      <td className={`px-4 py-3 text-text-primary font-medium ${isLastRow ? 'rounded-bl-lg' : ''}`}>
         {jiraUrl ? (
           <a
             href={jiraUrl}
@@ -78,7 +79,7 @@ export function TableRow({ data, index }: TableRowProps) {
       <td className={`px-4 py-3 text-center font-medium ${daysColor}`}>
         {workingDaysRemaining}
       </td>
-      <td className="px-4 py-3">
+      <td className={`px-4 py-3 ${isLastRow ? 'rounded-br-lg' : ''}`}>
         <ProgressBar percent={data.progressPercent} />
       </td>
     </tr>

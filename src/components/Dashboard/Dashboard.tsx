@@ -8,6 +8,10 @@ import { RefreshButton } from './RefreshButton';
 import { useJiraData } from '@/hooks/useJiraData';
 import { useCachedData } from '@/hooks/useCachedData';
 import { formatTimestamp } from '@/lib/calculations';
+import { tabsConfig } from '@/data/tabConfig';
+
+const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || '';
+const releaseNumber = process.env.NEXT_PUBLIC_RELEASE_NUMBER || '';
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('displays');
@@ -44,13 +48,15 @@ export function Dashboard() {
   };
 
   const currentData = activeTab === 'displays' ? displaysData : featuresData;
+  const currentTabConfig = tabsConfig.find(tab => tab.id === activeTab);
+  const showSummary = currentTabConfig?.showSummary ?? true;
 
   return (
     <div className="min-h-screen bg-bg-primary p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-text-primary">
-            PETARDA TEAM PROGRESS DASHBOARD
+            {teamName} TEAM RELEASE {releaseNumber} PROGRESS DASHBOARD
           </h1>
           <div className="flex items-center gap-4">
             {lastUpdate && (
@@ -78,8 +84,8 @@ export function Dashboard() {
             <div className="text-text-secondary">Loading data...</div>
           </div>
         ) : (
-          <div className="bg-bg-secondary border border-tertiary-blue rounded-lg overflow-visible">
-            <StatsTable data={currentData} />
+          <div className="bg-bg-secondary border-2 border-tertiary-blue rounded-lg overflow-visible">
+            <StatsTable data={currentData} showSummary={showSummary} />
           </div>
         )}
       </div>
