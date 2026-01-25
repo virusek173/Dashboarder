@@ -64,6 +64,32 @@ npm run build
 npm start
 ```
 
+### Docker Deployment
+
+**Important:** When using Docker, update your `.env.local`:
+- Change `DATABASE_URL` to `file:/app/data/prod.db`
+- Change SOCKS proxy from `127.0.0.1` to `host.docker.internal`
+  ```env
+  SOCKS_PROXY_URL=socks5://host.docker.internal:12345
+  ```
+
+**Using Makefile (recommended):**
+```bash
+make up      # Start everything
+make logs    # View logs
+make down    # Stop everything
+make help    # Show all commands
+```
+
+**Using docker-compose directly:**
+```bash
+docker-compose up -d --build  # Build and start
+docker-compose logs -f app    # View logs
+docker-compose down           # Stop
+```
+
+See [DOCKER.md](DOCKER.md) for detailed Docker deployment guide.
+
 ## Project Structure
 
 ```

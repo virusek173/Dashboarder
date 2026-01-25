@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_TEAM_NAME: ${NEXT_PUBLIC_TEAM_NAME}
+        NEXT_PUBLIC_RELEASE_NUMBER: ${NEXT_PUBLIC_RELEASE_NUMBER}
+        NEXT_PUBLIC_TEAM_ICON: ${NEXT_PUBLIC_TEAM_ICON}
+    container_name: dashboarder-app
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      # Database (SQLite file path)
+      DATABASE_URL: file:/app/data/prod.db
+      SOCKS_PROXY_URL: "socks5://host.docker.internal:1234"
+      # Next.js
+      NODE_ENV: production
+    volumes:
+      # Persist SQLite database
+      - sqlite_data:/app/data
+    extra_hosts:
+      # Allow container to access host machine (for SOCKS proxy, etc.)
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  sqlite_data:
+    driver: local
