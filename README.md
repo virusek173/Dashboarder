@@ -32,6 +32,10 @@ JIRA_API_TOKEN=your-bearer-token-here
 JIRA_STORY_POINTS_FIELD=customfield
 JIRA_RESOLVED_STATUS=Solved
 SOCKS_PROXY_URL=socks5://127.0.0.1:12345
+
+# Team configuration
+NEXT_PUBLIC_TEAM_NAME=TEAM
+NEXT_PUBLIC_RELEASE_NUMBER=1
 ```
 
 3. Copy `src/data/tabConfig.example.ts` to `src/data/tabConfig.ts`:
@@ -80,6 +84,16 @@ src/
 
 Edit `src/data/tabConfig.ts` to configure your project-specific tabs:
 
+### Tab Settings
+```typescript
+{
+  id: "displays",
+  label: "Displays",
+  showSummary: true, // Show summary row and progress bars (default: true)
+  rows: [...]
+}
+```
+
 ### Basic Row Configuration
 ```typescript
 {
@@ -110,9 +124,13 @@ See `src/data/tabConfig.example.ts` for more examples.
 - ✅ Track completed tickets and Story Points
 - 📅 Display deadlines and remaining working days
 - 📈 Progress bar with color coding (green >80%, yellow 50-80%, red <50%)
+- 📊 Story Points progress bars (completed vs remaining)
+- 💪 Motivational messages based on progress
 - 💾 Data caching in localStorage
 - 🔄 Refresh button to update data
 - ⏱️ Timestamp of last data fetch
+- ⚙️ Configurable team name and release number
+- 🔧 Per-tab summary visibility control
 
 ## Notes
 
