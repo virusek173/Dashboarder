@@ -13,22 +13,20 @@ services:
         NEXT_PUBLIC_JIRA_BASE_URL: ${NEXT_PUBLIC_JIRA_BASE_URL}
     container_name: dashboarder-app
     restart: unless-stopped
+    # Use host network - container shares host's network stack (allows access to localhost:1234)
+    network_mode: host
     env_file:
       - .env.local
-    ports:
-      - "${APP_PORT:-3000}:3000"
     environment:
       # Database (SQLite file path)
       DATABASE_URL: file:/app/data/prod.db
-      SOCKS_PROXY_URL: "socks5://host.docker.internal:1234"
+      # With host network, localhost in container = localhost on host
+      SOCKS_PROXY_URL: "socks5://localhost:1234"
       # Next.js
       NODE_ENV: production
     volumes:
       # Persist SQLite database
       - sqlite_data:/app/data
-    extra_hosts:
-      # Allow container to access host machine (for SOCKS proxy, etc.)
-      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
