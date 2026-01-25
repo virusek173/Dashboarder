@@ -6,6 +6,7 @@ import { getWorkingDaysColor, formatDate, calculateWorkingDays } from '@/lib/cal
 
 function buildJiraUrl(baseUrl: string | undefined, data: RowData): string | null {
   if (!baseUrl) return null;
+  if (!data.jiraLabels || data.jiraLabels.length === 0) return null;
 
   const conditions: string[] = [];
 

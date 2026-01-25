@@ -22,8 +22,13 @@ export function StatsTable({ data, showSummary = true }: StatsTableProps) {
 
   const jiraBaseUrl = process.env.NEXT_PUBLIC_JIRA_BASE_URL;
   const allLabels = [...new Set(data.flatMap(row => row.jiraLabels))];
-  const summaryJql = `labels IN (${allLabels.map(l => `"${l}"`).join(', ')})`;
-  const summaryUrl = jiraBaseUrl ? `${jiraBaseUrl}/issues/?jql=${encodeURIComponent(summaryJql)}` : null;
+  // Only create summary URL if there are labels to search for
+  const summaryJql = allLabels.length > 0
+    ? 'labels IN (' + allLabels.map(l => '"' + l + '"').join(', ') + ')'
+    : null;
+  const summaryUrl = jiraBaseUrl && summaryJql
+    ? `${jiraBaseUrl}/issues/?jql=${encodeURIComponent(summaryJql)}`
+    : null;
 
   return (
     <div>

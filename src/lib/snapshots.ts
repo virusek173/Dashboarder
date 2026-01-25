@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import { RowData } from "@/types";
+import { tabsConfig } from "@/tabConfig/tabConfig";
 
 // Database row type (matches Prisma schema)
 interface DbSnapshotRow {
@@ -44,11 +45,11 @@ export async function getLatestSnapshot() {
 
   const displays = rows
     .filter((row) => row.tabId === "displays")
-    .map((row) => transformRowToRowData(row));
+    .map((row) => transformRowToRowData(row, "displays"));
 
   const features = rows
     .filter((row) => row.tabId === "features")
-    .map((row) => transformRowToRowData(row));
+    .map((row) => transformRowToRowData(row, "features"));
 
   return {
     id: snapshot.id,
@@ -123,11 +124,17 @@ function transformRowToRowData(row: {
   progressPercent: number;
   workingDaysRemaining: number;
   deadline: Date;
-}): RowData {
+}, tabId: string): RowData {
+  // Get config data for this row
+  const tabConfig = tabsConfig.find(tab => tab.id === tabId);
+  const rowConfig = tabConfig?.rows.find(r => r.id === row.rowId);
+
   return {
     id: row.rowId,
     label: row.label,
-    jiraLabels: [], // Not stored in DB, comes from config
+    jiraLabels: rowConfig?.jiraLabels || [],
+    requireAllLabels: rowConfig?.requireAllLabels,
+    excludeLabels: rowConfig?.excludeLabels,
     completedTickets: row.completedTickets,
     totalTickets: row.totalTickets,
     completedStoryPoints: row.completedStoryPoints,
