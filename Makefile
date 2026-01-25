@@ -1,12 +1,12 @@
 # Build images
 build:
 	@echo "Building Docker images..."
-	docker-compose build --no-cache
+	docker-compose --env-file .env.local build --no-cache
 
 # Start containers
 up:
 	@echo "Starting containers..."
-	docker-compose up -d --build
+	docker-compose --env-file .env.local up -d
 	@echo "Application running at http://localhost:3000"
 
 # Stop containers
@@ -17,11 +17,12 @@ down:
 # Restart containers
 restart:
 	@echo "Restarting containers..."
-	docker-compose down
-	docker-compose up -d --build
-soft-restart:
-	@echo "Restarting containers..."
 	docker-compose restart
+	
+hard-restart:
+	@echo "Restarting containers..."
+	docker-compose down
+	docker-compose --env-file .env.local up -d --build
 
 # Show logs
 logs:

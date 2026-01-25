@@ -37,15 +37,16 @@ SOCKS_PROXY_URL=socks5://127.0.0.1:12345
 NEXT_PUBLIC_TEAM_NAME=TEAM
 NEXT_PUBLIC_RELEASE_NUMBER=1
 NEXT_PUBLIC_TEAM_ICON=🚀
+NEXT_PUBLIC_JIRA_BASE_URL=https://your-jira-server.com
 ```
 
-3. Copy `src/data/tabConfig.example.ts` to `src/data/tabConfig.ts`:
+3. Copy `tabConfig/tabConfig.example.ts` to `tabConfig/tabConfig.ts`:
 
 ```bash
-cp src/data/tabConfig.example.ts src/data/tabConfig.ts
+cp tabConfig/tabConfig.example.ts tabConfig/tabConfig.ts
 ```
 
-4. Customize your project-specific tabs, deadlines and labels in `src/data/tabConfig.ts`
+4. Customize your project-specific tabs, deadlines and labels in `tabConfig/tabConfig.ts`
 
 ## Running the Application
 
@@ -75,10 +76,12 @@ npm start
 
 **Using Makefile (recommended):**
 ```bash
-make up      # Start everything
-make logs    # View logs
-make down    # Stop everything
-make help    # Show all commands
+make up            # Start everything
+make restart       # Quick restart (no rebuild)
+make hard-restart  # Full restart with rebuild
+make logs          # View logs
+make down          # Stop everything
+make help          # Show all commands
 ```
 
 **Using docker-compose directly:**
@@ -103,13 +106,13 @@ src/
 │   └── Dashboard/        # Dashboard components
 ├── hooks/                # React hooks
 ├── lib/                  # Libraries and helpers
-├── types/                # TypeScript types
-└── data/                 # Configuration (tabConfig.ts)
+└── types/                # TypeScript types
+tabConfig/                # Configuration (tabConfig.ts)
 ```
 
 ## Tab Configuration
 
-Edit `src/data/tabConfig.ts` to configure your project-specific tabs:
+Edit `tabConfig/tabConfig.ts` to configure your project-specific tabs:
 
 ### Tab Settings
 ```typescript
@@ -143,7 +146,7 @@ Edit `src/data/tabConfig.ts` to configure your project-specific tabs:
 }
 ```
 
-See `src/data/tabConfig.example.ts` for more examples.
+See `tabConfig/tabConfig.example.ts` for more examples.
 
 ## Features
 
@@ -158,6 +161,7 @@ See `src/data/tabConfig.example.ts` for more examples.
 - ⏱️ Timestamp of last data fetch
 - ⚙️ Configurable team name and release number
 - 🎨 Customizable team icon (emoji or image URL) for header and favicon
+- 📄 Dynamic page title based on team name
 - 🔧 Per-tab summary visibility control
 
 ## Notes

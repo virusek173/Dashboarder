@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchTicketsByLabels, processRowData } from "@/lib/jira";
 import { saveSnapshot } from "@/lib/snapshots";
-import { tabsConfig } from "@/data/tabConfig";
+import { tabsConfig } from "@/tabConfig/tabConfig";
 import { RowData } from "@/types";
 
 /**

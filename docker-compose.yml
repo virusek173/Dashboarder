@@ -10,6 +10,7 @@ services:
         NEXT_PUBLIC_TEAM_NAME: ${NEXT_PUBLIC_TEAM_NAME}
         NEXT_PUBLIC_RELEASE_NUMBER: ${NEXT_PUBLIC_RELEASE_NUMBER}
         NEXT_PUBLIC_TEAM_ICON: ${NEXT_PUBLIC_TEAM_ICON}
+        NEXT_PUBLIC_JIRA_BASE_URL: ${NEXT_PUBLIC_JIRA_BASE_URL}
     container_name: dashboarder-app
     restart: unless-stopped
     env_file:

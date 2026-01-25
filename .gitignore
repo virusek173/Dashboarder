@@ -15,7 +15,7 @@
 .env.local
 
 # project-specific configuration
-/src/data/tabConfig.ts
+/tabConfig/tabConfig.ts
 
 # typescript
 next-env.d.ts

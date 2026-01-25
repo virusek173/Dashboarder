@@ -8,7 +8,7 @@ import { RefreshButton } from "./RefreshButton";
 import { useJiraData } from "@/hooks/useJiraData";
 import { useCachedData } from "@/hooks/useCachedData";
 import { formatTimestamp } from "@/lib/calculations";
-import { tabsConfig } from "@/data/tabConfig";
+import { tabsConfig } from "@/tabConfig/tabConfig";
 
 const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || "";
 const releaseNumber = process.env.NEXT_PUBLIC_RELEASE_NUMBER || "";
