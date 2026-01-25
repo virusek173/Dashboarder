@@ -1,28 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { TabType, RowData } from '@/types';
-import { TabNavigation } from './TabNavigation';
-import { StatsTable } from './StatsTable';
-import { RefreshButton } from './RefreshButton';
-import { useJiraData } from '@/hooks/useJiraData';
-import { useCachedData } from '@/hooks/useCachedData';
-import { formatTimestamp } from '@/lib/calculations';
-import { tabsConfig } from '@/data/tabConfig';
+import { useState, useEffect } from "react";
+import { TabType, RowData } from "@/types";
+import { TabNavigation } from "./TabNavigation";
+import { StatsTable } from "./StatsTable";
+import { RefreshButton } from "./RefreshButton";
+import { useJiraData } from "@/hooks/useJiraData";
+import { useCachedData } from "@/hooks/useCachedData";
+import { formatTimestamp } from "@/lib/calculations";
+import { tabsConfig } from "@/data/tabConfig";
 
-const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || '';
-const releaseNumber = process.env.NEXT_PUBLIC_RELEASE_NUMBER || '';
-const teamIcon = process.env.NEXT_PUBLIC_TEAM_ICON || '';
+const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || "";
+const releaseNumber = process.env.NEXT_PUBLIC_RELEASE_NUMBER || "";
+const teamIcon = process.env.NEXT_PUBLIC_TEAM_ICON || "";
 
 export function Dashboard() {
-  const [activeTab, setActiveTab] = useState<TabType>('displays');
+  const [activeTab, setActiveTab] = useState<TabType>("displays");
   const [displaysData, setDisplaysData] = useState<RowData[]>([]);
   const [featuresData, setFeaturesData] = useState<RowData[]>([]);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
 
-  const { loading, error, fetchTabData } = useJiraData();
-  const { cachedData, saveToCache } = useCachedData();
+  const { loading: syncing, error, syncAllData } = useJiraData();
+  const { cachedData, loading: initialLoading } = useCachedData();
 
+  // Load data from database on mount
   useEffect(() => {
     if (cachedData) {
       setDisplaysData(cachedData.data.displays);
@@ -31,20 +32,15 @@ export function Dashboard() {
     }
   }, [cachedData]);
 
+  // Refresh: fetch from JIRA and save to database
   const handleRefresh = async () => {
     try {
-      const displaysResult = await fetchTabData('displays');
-      const featuresResult = await fetchTabData('features');
-
-      setDisplaysData(displaysResult);
-      setFeaturesData(featuresResult);
-
-      const now = new Date().toISOString();
-      setLastUpdate(now);
-
-      saveToCache(displaysResult, featuresResult);
+      const result = await syncAllData();
+      setDisplaysData(result.displays);
+      setFeaturesData(result.features);
+      setLastUpdate(result.timestamp);
     } catch (err) {
-      console.error('Failed to refresh data:', err);
+      console.error("Failed to refresh data:", err);
     }
   };
 
@@ -66,7 +62,7 @@ export function Dashboard() {
                 Data from: {formatTimestamp(lastUpdate)}
               </div>
             )}
-            <RefreshButton onClick={handleRefresh} loading={loading} />
+            <RefreshButton onClick={handleRefresh} loading={syncing} />
           </div>
         </div>
 
@@ -81,7 +77,7 @@ export function Dashboard() {
           </div>
         )}
 
-        {loading && !currentData.length ? (
+        {(syncing || initialLoading) && !currentData.length ? (
           <div className="flex items-center justify-center py-12">
             <div className="text-text-secondary">Loading data...</div>
           </div>

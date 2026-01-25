@@ -1,5 +1,3 @@
-export const CACHE_KEY = 'jira-dashboard-cache';
-
 export const COLUMN_HEADERS = {
   label: 'Label',
   completedTickets: '✓ Tickets',

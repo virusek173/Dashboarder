@@ -26,8 +26,6 @@ export async function POST(request: NextRequest) {
     );
 
     // Fetch all tickets with a single query
-    console.log("lego fetchTicketsByLabels", { allLabels });
-
     const allTickets = await fetchTicketsByLabels(allLabels);
 
     // Process data for each row

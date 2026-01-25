@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Snapshot represents a daily data snapshot from JIRA
+// Each day has exactly one snapshot
+model Snapshot {
+  id        String        @id @default(cuid())
+  createdAt DateTime      @default(now())
+  date      DateTime      @unique               // One snapshot per day
+  rows      SnapshotRow[]
+}
+
+// SnapshotRow stores statistics for a single row (e.g., "Feature A")
+// Contains all JIRA metrics for that row on a given day
+model SnapshotRow {
+  id                   String   @id @default(cuid())
+
+  // Relation to parent Snapshot
+  snapshot             Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  snapshotId           String
+
+  // Row identification
+  tabId                String   // "displays" or "features"
+  rowId                String   // e.g., "feature-1"
+  label                String   // Display name, e.g., "Feature A"
+
+  // JIRA metrics
+  completedTickets     Int
+  totalTickets         Int
+  completedStoryPoints Float
+  totalStoryPoints     Float
+  progressPercent      Float    // 0-100
+
+  // Deadline info
+  workingDaysRemaining Int
+  deadline             DateTime
+
+  @@index([snapshotId])
+  @@index([tabId, rowId])
+}

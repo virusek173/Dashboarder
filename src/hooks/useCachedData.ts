@@ -1,57 +1,42 @@
-import { useState, useEffect } from 'react';
-import { CachedData, RowData } from '@/types';
-import { CACHE_KEY } from '@/lib/constants';
+import { useState, useEffect } from "react";
+import { CachedData } from "@/types";
 
+/**
+ * Hook for loading cached data from database via API
+ */
 export function useCachedData() {
   const [cachedData, setCachedData] = useState<CachedData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadFromCache();
+    loadFromDatabase();
   }, []);
 
-  const loadFromCache = () => {
+  const loadFromDatabase = async () => {
     try {
-      const stored = localStorage.getItem(CACHE_KEY);
-      if (stored) {
-        const parsed: CachedData = JSON.parse(stored);
-        setCachedData(parsed);
-        return parsed;
+      setLoading(true);
+      const response = await fetch("/api/snapshots");
+
+      if (response.ok) {
+        const data = await response.json();
+        setCachedData({
+          timestamp: data.timestamp,
+          data: data.data,
+        });
+      } else if (response.status === 404) {
+        // No data yet, that's fine
+        setCachedData(null);
       }
     } catch (error) {
-      console.error('Error loading from cache:', error);
-    }
-    return null;
-  };
-
-  const saveToCache = (displays: RowData[], features: RowData[]) => {
-    try {
-      const dataToCache: CachedData = {
-        timestamp: new Date().toISOString(),
-        data: {
-          displays,
-          features,
-        },
-      };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
-      setCachedData(dataToCache);
-    } catch (error) {
-      console.error('Error saving to cache:', error);
-    }
-  };
-
-  const clearCache = () => {
-    try {
-      localStorage.removeItem(CACHE_KEY);
-      setCachedData(null);
-    } catch (error) {
-      console.error('Error clearing cache:', error);
+      console.error("Error loading from database:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
     cachedData,
-    saveToCache,
-    clearCache,
-    loadFromCache,
+    loading,
+    refetch: loadFromDatabase,
   };
 }
