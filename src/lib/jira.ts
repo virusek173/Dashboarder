@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 import { JiraTicket, RowData, RowConfig } from '@/types';
 import { calculateWorkingDays, calculateProgress } from './calculations';
 
-const JIRA_BASE_URL = process.env.JIRA_BASE_URL;
+const JIRA_BASE_URL = process.env.NEXT_PUBLIC_JIRA_BASE_URL;
 const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
 const SOCKS_PROXY_URL = process.env.SOCKS_PROXY_URL;
 const STORY_POINTS_FIELD = process.env.JIRA_STORY_POINTS_FIELD;
@@ -110,12 +110,14 @@ export function processRowData(rowConfig: RowConfig, tickets: JiraTicket[]): Row
   }, 0);
 
   const workingDaysRemaining = calculateWorkingDays(deadline);
-  const progressPercent = calculateProgress(completedTickets.length, totalTickets.length);
+  const progressPercent = calculateProgress(completedStoryPoints, totalStoryPoints);
 
   return {
     id: rowConfig.id,
     label: rowConfig.label,
     jiraLabels: rowConfig.jiraLabels,
+    requireAllLabels: rowConfig.requireAllLabels,
+    excludeLabels: rowConfig.excludeLabels,
     completedTickets: completedTickets.length,
     totalTickets: totalTickets.length,
     completedStoryPoints,

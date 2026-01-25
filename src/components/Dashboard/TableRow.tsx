@@ -2,7 +2,7 @@
 
 import { RowData } from '@/types';
 import { ProgressBar } from './ProgressBar';
-import { getWorkingDaysColor, formatDate } from '@/lib/calculations';
+import { getWorkingDaysColor, formatDate, calculateWorkingDays } from '@/lib/calculations';
 
 interface TableRowProps {
   data: RowData;
@@ -10,8 +10,19 @@ interface TableRowProps {
 }
 
 export function TableRow({ data, index }: TableRowProps) {
-  const daysColor = getWorkingDaysColor(data.workingDaysRemaining);
+  const workingDaysRemaining = Math.max(0, calculateWorkingDays(data.deadline));
+  const daysColor = getWorkingDaysColor(workingDaysRemaining);
   const isEven = index % 2 === 0;
+
+  const jiraBaseUrl = process.env.NEXT_PUBLIC_JIRA_BASE_URL;
+  const includeJql = data.requireAllLabels
+    ? data.jiraLabels.map(l => `labels = "${l}"`).join(' AND ')
+    : `labels IN (${data.jiraLabels.map(l => `"${l}"`).join(', ')})`;
+  const excludeJql = data.excludeLabels?.length
+    ? ` AND labels NOT IN (${data.excludeLabels.map(l => `"${l}"`).join(', ')})`
+    : '';
+  const jql = includeJql + excludeJql;
+  const jiraUrl = jiraBaseUrl ? `${jiraBaseUrl}/issues/?jql=${encodeURIComponent(jql)}` : null;
 
   return (
     <tr
@@ -20,7 +31,18 @@ export function TableRow({ data, index }: TableRowProps) {
       }`}
     >
       <td className="px-4 py-3 text-text-primary font-medium">
-        {data.label}
+        {jiraUrl ? (
+          <a
+            href={jiraUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-accent-blue hover:underline transition-smooth"
+          >
+            {data.label}
+          </a>
+        ) : (
+          data.label
+        )}
       </td>
       <td className="px-4 py-3 text-center text-text-secondary">
         {data.completedTickets}
@@ -38,7 +60,7 @@ export function TableRow({ data, index }: TableRowProps) {
         {formatDate(data.deadline)}
       </td>
       <td className={`px-4 py-3 text-center font-medium ${daysColor}`}>
-        {data.workingDaysRemaining}
+        {workingDaysRemaining}
       </td>
       <td className="px-4 py-3">
         <ProgressBar percent={data.progressPercent} />

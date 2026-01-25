@@ -17,6 +17,8 @@ export interface RowData {
   id: string;
   label: string;
   jiraLabels: string[];
+  requireAllLabels?: boolean;
+  excludeLabels?: string[];
   completedTickets: number;
   totalTickets: number;
   completedStoryPoints: number;

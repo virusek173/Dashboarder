@@ -14,9 +14,14 @@ export function StatsTable({ data }: StatsTableProps) {
   const totalAllTickets = data.reduce((sum, row) => sum + row.totalTickets, 0);
   const totalCompletedSP = data.reduce((sum, row) => sum + row.completedStoryPoints, 0);
   const totalAllSP = data.reduce((sum, row) => sum + row.totalStoryPoints, 0);
-  const averageProgress = data.length > 0
-    ? data.reduce((sum, row) => sum + row.progressPercent, 0) / data.length
+  const averageProgress = totalAllSP > 0
+    ? (totalCompletedSP / totalAllSP) * 100
     : 0;
+
+  const jiraBaseUrl = process.env.NEXT_PUBLIC_JIRA_BASE_URL;
+  const allLabels = [...new Set(data.flatMap(row => row.jiraLabels))];
+  const summaryJql = `labels IN (${allLabels.map(l => `"${l}"`).join(', ')})`;
+  const summaryUrl = jiraBaseUrl ? `${jiraBaseUrl}/issues/?jql=${encodeURIComponent(summaryJql)}` : null;
 
   return (
     <div className="overflow-x-auto overflow-y-visible">
@@ -80,7 +85,18 @@ export function StatsTable({ data }: StatsTableProps) {
               ))}
               <tr className="bg-deep-navy border-t-2 border-accent-blue font-semibold">
                 <td className="px-4 py-3 text-left text-text-primary">
-                  Summary
+                  {summaryUrl ? (
+                    <a
+                      href={summaryUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-accent-blue hover:underline transition-smooth"
+                    >
+                      Summary
+                    </a>
+                  ) : (
+                    'Summary'
+                  )}
                 </td>
                 <td className="px-4 py-3 text-center text-text-primary">
                   {totalCompletedTickets}
