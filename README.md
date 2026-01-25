@@ -36,6 +36,7 @@ SOCKS_PROXY_URL=socks5://127.0.0.1:12345
 # Team configuration
 NEXT_PUBLIC_TEAM_NAME=TEAM
 NEXT_PUBLIC_RELEASE_NUMBER=1
+NEXT_PUBLIC_TEAM_ICON=🚀
 ```
 
 3. Copy `src/data/tabConfig.example.ts` to `src/data/tabConfig.ts`:
@@ -130,6 +131,7 @@ See `src/data/tabConfig.example.ts` for more examples.
 - 🔄 Refresh button to update data
 - ⏱️ Timestamp of last data fetch
 - ⚙️ Configurable team name and release number
+- 🎨 Customizable team icon (emoji or image URL) for header and favicon
 - 🔧 Per-tab summary visibility control
 
 ## Notes
