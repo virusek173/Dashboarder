@@ -4,6 +4,29 @@ import { RowData } from '@/types';
 import { ProgressBar } from './ProgressBar';
 import { getWorkingDaysColor, formatDate, calculateWorkingDays } from '@/lib/calculations';
 
+function buildJiraUrl(baseUrl: string | undefined, data: RowData): string | null {
+  if (!baseUrl) return null;
+
+  const conditions: string[] = [];
+
+  if (data.requireAllLabels) {
+    data.jiraLabels.forEach(label => {
+      conditions.push(`labels = "${label}"`);
+    });
+  } else {
+    const labels = data.jiraLabels.map(l => `"${l}"`).join(', ');
+    conditions.push(`labels IN (${labels})`);
+  }
+
+  if (data.excludeLabels?.length) {
+    const excludeLabels = data.excludeLabels.map(l => `"${l}"`).join(', ');
+    conditions.push(`labels NOT IN (${excludeLabels})`);
+  }
+
+  const jql = conditions.join(' AND ');
+  return `${baseUrl}/issues/?jql=${encodeURIComponent(jql)}`;
+}
+
 interface TableRowProps {
   data: RowData;
   index: number;
@@ -15,14 +38,7 @@ export function TableRow({ data, index }: TableRowProps) {
   const isEven = index % 2 === 0;
 
   const jiraBaseUrl = process.env.NEXT_PUBLIC_JIRA_BASE_URL;
-  const includeJql = data.requireAllLabels
-    ? data.jiraLabels.map(l => `labels = "${l}"`).join(' AND ')
-    : `labels IN (${data.jiraLabels.map(l => `"${l}"`).join(', ')})`;
-  const excludeJql = data.excludeLabels?.length
-    ? ` AND labels NOT IN (${data.excludeLabels.map(l => `"${l}"`).join(', ')})`
-    : '';
-  const jql = includeJql + excludeJql;
-  const jiraUrl = jiraBaseUrl ? `${jiraBaseUrl}/issues/?jql=${encodeURIComponent(jql)}` : null;
+  const jiraUrl = buildJiraUrl(jiraBaseUrl, data);
 
   return (
     <tr
