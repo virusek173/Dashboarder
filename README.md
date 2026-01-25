@@ -31,7 +31,7 @@ JIRA_BASE_URL=https://your-jira-server.com
 JIRA_API_TOKEN=your-bearer-token-here
 JIRA_STORY_POINTS_FIELD=customfield
 JIRA_RESOLVED_STATUS=Solved
-SOCKS_PROXY_URL=socks5://127.0.0.1:12345
+SOCKS_PROXY_URL=socks5://127.0.0.1:1234
 
 # Team configuration
 NEXT_PUBLIC_TEAM_NAME=TEAM
@@ -71,7 +71,7 @@ npm start
 - Change `DATABASE_URL` to `file:/app/data/prod.db`
 - Change SOCKS proxy from `127.0.0.1` to `host.docker.internal`
   ```env
-  SOCKS_PROXY_URL=socks5://host.docker.internal:12345
+  SOCKS_PROXY_URL=socks5://host.docker.internal:1234
   ```
 
 **Using Makefile (recommended):**
