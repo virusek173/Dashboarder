@@ -48,6 +48,42 @@ cp tabConfig/tabConfig.example.ts tabConfig/tabConfig.ts
 
 4. Customize your project-specific tabs, deadlines and labels in `tabConfig/tabConfig.ts`
 
+## Authentication
+
+The dashboard is protected with HTTP Basic Authentication. When you access the application, your browser will prompt for credentials.
+
+### Setup Authentication
+
+1. **Generate a password hash:**
+
+```bash
+npx tsx scripts/hash-password.ts "your-secure-password"
+```
+
+2. **Add credentials to `.env.local`:**
+
+```env
+AUTH_ENABLED=true
+AUTH_USERNAME=user
+AUTH_PASSWORD_HASH=<hex-hash-from-step-1>
+```
+
+### Disable Authentication (Development)
+
+To disable authentication during development:
+
+```env
+AUTH_ENABLED=false
+```
+
+### Security Notes
+
+- Password is stored as SHA-256 hash (never plaintext)
+- Hash format is simple hex string (no special characters)
+- Application is bound to `localhost` only (127.0.0.1:3000)
+- For production deployment beyond localhost, use HTTPS
+- Browser caches credentials during session
+
 ## Running the Application
 
 ### Development Mode
