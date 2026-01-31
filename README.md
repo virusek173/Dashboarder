@@ -7,7 +7,7 @@ Dashboard built with Next.js for tracking development team progress with JIRA in
 - **Next.js 14** (App Router)
 - **TypeScript**
 - **Tailwind CSS**
-- **Axios** with SOCKS proxy
+- **Axios** with optional SOCKS proxy support
 - **Lucide React** (icons)
 
 ## Installation
@@ -31,7 +31,7 @@ JIRA_BASE_URL=https://your-jira-server.com
 JIRA_API_TOKEN=your-bearer-token-here
 JIRA_STORY_POINTS_FIELD=customfield
 JIRA_RESOLVED_STATUS=Solved
-SOCKS_PROXY_URL=socks5://127.0.0.1:1234
+SOCKS_PROXY_URL=socks5://127.0.0.1:1234  # Optional: omit if direct connection to JIRA is available
 
 # Team configuration
 NEXT_PUBLIC_TEAM_NAME=TEAM
@@ -69,7 +69,7 @@ npm start
 
 **Important:** When using Docker, update your `.env.local`:
 - Change `DATABASE_URL` to `file:/app/data/prod.db`
-- Change SOCKS proxy from `127.0.0.1` to `host.docker.internal`
+- If using SOCKS proxy, change from `127.0.0.1` to `host.docker.internal`
   ```env
   SOCKS_PROXY_URL=socks5://host.docker.internal:1234
   ```
@@ -166,7 +166,7 @@ See `tabConfig/tabConfig.example.ts` for more examples.
 
 ## Notes
 
-- Application requires connection to JIRA Server through SOCKS proxy
+- Application supports optional SOCKS proxy for JIRA Server connection (direct connection used if proxy not configured)
 - JIRA token is securely stored only on server-side
 - Working days are counted Monday to Friday (excluding holidays)
 - Ticket is considered completed based on configurable resolution status (default: "Solved")

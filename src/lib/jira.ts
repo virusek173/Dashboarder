@@ -12,22 +12,24 @@ const RESOLVED_STATUS = process.env.JIRA_RESOLVED_STATUS;
 let jiraClient: AxiosInstance | null = null;
 
 /**
- * Initializes JIRA client with SOCKS proxy
+ * Initializes JIRA client with optional SOCKS proxy
  */
 function getJiraClient(): AxiosInstance {
   if (jiraClient) return jiraClient;
 
-  if (!SOCKS_PROXY_URL) {
-    throw new Error("SOCKS_PROXY_URL is not defined in environment variables");
+  if (SOCKS_PROXY_URL) {
+    const agent = new SocksProxyAgent(SOCKS_PROXY_URL);
+
+    jiraClient = axios.create({
+      httpsAgent: agent,
+      httpAgent: agent,
+      timeout: 30000,
+    });
+  } else {
+    jiraClient = axios.create({
+      timeout: 30000,
+    });
   }
-
-  const agent = new SocksProxyAgent(SOCKS_PROXY_URL);
-
-  jiraClient = axios.create({
-    httpsAgent: agent,
-    httpAgent: agent,
-    timeout: 30000,
-  });
 
   return jiraClient;
 }
