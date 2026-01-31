@@ -20,8 +20,6 @@ services:
     environment:
       # Database (SQLite file path)
       DATABASE_URL: file:/app/data/prod.db
-      # With host network, localhost in container = localhost on host
-      SOCKS_PROXY_URL: "socks5://localhost:1234"
       # Next.js
       NODE_ENV: production
     volumes:
