@@ -39,7 +39,8 @@ model SnapshotRow {
   totalTickets         Int
   completedStoryPoints Float
   totalStoryPoints     Float
-  progressPercent      Float    // 0-100
+  progressPercent Float    // 0-100 (Story Points)
+  ticketProgressPercent Float   @default(0) // 0-100 (Tickets)
 
   // Deadline info
   workingDaysRemaining Int

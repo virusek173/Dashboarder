@@ -112,6 +112,10 @@ export function processRowData(
     completedStoryPoints,
     totalStoryPoints,
   );
+  const ticketProgressPercent = calculateProgress(
+    completedTickets.length,
+    totalTickets.length,
+  );
 
   return {
     id: rowConfig.id,
@@ -126,5 +130,6 @@ export function processRowData(
     deadline,
     workingDaysRemaining,
     progressPercent,
+    ticketProgressPercent,
   };
 }

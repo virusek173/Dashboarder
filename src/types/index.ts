@@ -26,6 +26,7 @@ export interface RowData {
   deadline: Date;
   workingDaysRemaining: number;
   progressPercent: number;
+  ticketProgressPercent: number;
 }
 
 export interface CachedData {
@@ -53,3 +54,5 @@ export interface RowConfig {
 }
 
 export type TabType = 'displays' | 'features';
+
+export type ProgressMode = 'story-points' | 'tickets';

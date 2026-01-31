@@ -1,24 +1,27 @@
 'use client';
 
-import { RowData } from '@/types';
+import { RowData, ProgressMode } from '@/types';
 import { TableRow } from './TableRow';
 import { Tooltip } from './Tooltip';
 import { StoryPointsProgress } from './StoryPointsProgress';
-import { COLUMN_HEADERS, COLUMN_TOOLTIPS } from '@/lib/constants';
+import { COLUMN_HEADERS, COLUMN_TOOLTIPS, getProgressTooltip, PROGRESS_MODE } from '@/lib/constants';
+import { calculateProgressPercent } from '@/lib/calculations';
 
 interface StatsTableProps {
   data: RowData[];
   showSummary?: boolean;
+  progressMode: ProgressMode;
 }
 
-export function StatsTable({ data, showSummary = true }: StatsTableProps) {
+export function StatsTable({ data, showSummary = true, progressMode }: StatsTableProps) {
   const totalCompletedTickets = data.reduce((sum, row) => sum + row.completedTickets, 0);
   const totalAllTickets = data.reduce((sum, row) => sum + row.totalTickets, 0);
   const totalCompletedSP = data.reduce((sum, row) => sum + row.completedStoryPoints, 0);
   const totalAllSP = data.reduce((sum, row) => sum + row.totalStoryPoints, 0);
-  const averageProgress = totalAllSP > 0
-    ? (totalCompletedSP / totalAllSP) * 100
-    : 0;
+
+  const averageProgress = progressMode === PROGRESS_MODE.STORY_POINTS
+    ? calculateProgressPercent(totalCompletedSP, totalAllSP)
+    : calculateProgressPercent(totalCompletedTickets, totalAllTickets);
 
   const jiraBaseUrl = process.env.NEXT_PUBLIC_JIRA_BASE_URL;
   const allLabels = [...new Set(data.flatMap(row => row.jiraLabels))];
@@ -70,7 +73,7 @@ export function StatsTable({ data, showSummary = true }: StatsTableProps) {
               </Tooltip>
             </th>
             <th className="px-4 py-3 text-center text-text-primary font-semibold overflow-visible rounded-tr-lg">
-              <Tooltip content={COLUMN_TOOLTIPS.progress}>
+              <Tooltip content={getProgressTooltip(progressMode)}>
                 <span className="cursor-help">{COLUMN_HEADERS.progress}</span>
               </Tooltip>
             </th>
@@ -94,6 +97,7 @@ export function StatsTable({ data, showSummary = true }: StatsTableProps) {
                   data={row}
                   index={index}
                   isLastRow={!showSummary && index === data.length - 1}
+                  progressMode={progressMode}
                 />
               ))}
               {showSummary && (
@@ -145,6 +149,9 @@ export function StatsTable({ data, showSummary = true }: StatsTableProps) {
         <StoryPointsProgress
           completedSP={totalCompletedSP}
           totalSP={totalAllSP}
+          completedTickets={totalCompletedTickets}
+          totalTickets={totalAllTickets}
+          progressMode={progressMode}
         />
       )}
     </div>

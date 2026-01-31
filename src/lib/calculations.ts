@@ -39,6 +39,13 @@ export function calculateProgress(completed: number, total: number): number {
 }
 
 /**
+ * Calculates progress percentage (returns float, not rounded)
+ */
+export function calculateProgressPercent(completed: number, total: number): number {
+  return total > 0 ? (completed / total) * 100 : 0;
+}
+
+/**
  * Returns color for progress bar based on percentage
  */
 export function getProgressColor(percent: number): string {

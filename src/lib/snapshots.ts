@@ -14,6 +14,7 @@ interface DbSnapshotRow {
   completedStoryPoints: number;
   totalStoryPoints: number;
   progressPercent: number;
+  ticketProgressPercent: number;
   workingDaysRemaining: number;
   deadline: Date;
 }
@@ -122,6 +123,7 @@ function transformRowToRowData(row: {
   completedStoryPoints: number;
   totalStoryPoints: number;
   progressPercent: number;
+  ticketProgressPercent: number;
   workingDaysRemaining: number;
   deadline: Date;
 }, tabId: string): RowData {
@@ -140,6 +142,7 @@ function transformRowToRowData(row: {
     completedStoryPoints: row.completedStoryPoints,
     totalStoryPoints: row.totalStoryPoints,
     progressPercent: row.progressPercent,
+    ticketProgressPercent: row.ticketProgressPercent,
     workingDaysRemaining: row.workingDaysRemaining,
     deadline: row.deadline,
   };
@@ -161,6 +164,7 @@ function transformRowDataToDb(
     completedStoryPoints: row.completedStoryPoints,
     totalStoryPoints: row.totalStoryPoints,
     progressPercent: row.progressPercent,
+    ticketProgressPercent: row.ticketProgressPercent,
     workingDaysRemaining: row.workingDaysRemaining,
     deadline: row.deadline,
   };
@@ -177,6 +181,7 @@ function transformRowDataToDbCreate(row: RowData, tabId: string) {
     completedStoryPoints: row.completedStoryPoints,
     totalStoryPoints: row.totalStoryPoints,
     progressPercent: row.progressPercent,
+    ticketProgressPercent: row.ticketProgressPercent,
     workingDaysRemaining: row.workingDaysRemaining,
     deadline: row.deadline,
   };

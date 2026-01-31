@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TabType, RowData } from "@/types";
+import { TabType, RowData, ProgressMode } from "@/types";
 import { TabNavigation } from "./TabNavigation";
 import { StatsTable } from "./StatsTable";
 import { RefreshButton } from "./RefreshButton";
+import { ProgressModeSwitch } from "./ProgressModeSwitch";
 import { useJiraData } from "@/hooks/useJiraData";
 import { useCachedData } from "@/hooks/useCachedData";
 import { formatTimestamp } from "@/lib/calculations";
 import { tabsConfig } from "@/tabConfig/tabConfig";
+import { PROGRESS_MODE } from "@/lib/constants";
 
 const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || "";
 const releaseNumber = process.env.NEXT_PUBLIC_RELEASE_NUMBER || "";
@@ -19,6 +21,7 @@ export function Dashboard() {
   const [displaysData, setDisplaysData] = useState<RowData[]>([]);
   const [featuresData, setFeaturesData] = useState<RowData[]>([]);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+  const [progressMode, setProgressMode] = useState<ProgressMode>(PROGRESS_MODE.STORY_POINTS);
 
   const { loading: syncing, error, syncAllData } = useJiraData();
   const { cachedData, loading: initialLoading } = useCachedData();
@@ -66,8 +69,9 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+          <ProgressModeSwitch mode={progressMode} onChange={setProgressMode} />
         </div>
 
         {error && (
@@ -83,7 +87,7 @@ export function Dashboard() {
           </div>
         ) : (
           <div className="bg-bg-secondary border-2 border-tertiary-blue rounded-lg overflow-visible">
-            <StatsTable data={currentData} showSummary={showSummary} />
+            <StatsTable data={currentData} showSummary={showSummary} progressMode={progressMode} />
           </div>
         )}
       </div>

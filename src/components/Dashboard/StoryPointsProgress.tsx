@@ -1,29 +1,44 @@
 "use client";
 
+import { ProgressMode } from "@/types";
+import { PROGRESS_MODE_LABELS, PROGRESS_MODE } from "@/lib/constants";
+
 interface StoryPointsProgressProps {
   completedSP: number;
   totalSP: number;
+  completedTickets: number;
+  totalTickets: number;
+  progressMode: ProgressMode;
 }
 
 export function StoryPointsProgress({
   completedSP,
   totalSP,
+  completedTickets,
+  totalTickets,
+  progressMode,
 }: StoryPointsProgressProps) {
-  const remainingSP = totalSP - completedSP;
-  const completedPercent = totalSP > 0 ? (completedSP / totalSP) * 100 : 0;
-  const remainingPercent = totalSP > 0 ? (remainingSP / totalSP) * 100 : 0;
+  const isTicketsMode = progressMode === PROGRESS_MODE.TICKETS;
+
+  const completed = isTicketsMode ? completedTickets : completedSP;
+  const total = isTicketsMode ? totalTickets : totalSP;
+  const remaining = total - completed;
+  const unit = isTicketsMode ? PROGRESS_MODE_LABELS.TICKETS : PROGRESS_MODE_LABELS.STORY_POINTS_SHORT;
+
+  const completedPercent = total > 0 ? (completed / total) * 100 : 0;
+  const remainingPercent = total > 0 ? (remaining / total) * 100 : 0;
 
   return (
     <div className="p-6 bg-bg-secondary rounded-lg">
       <div className="space-y-4">
-        {/* Completed Story Points */}
+        {/* Completed */}
         <div>
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium text-status-success">
               Completed
             </span>
             <span className="text-sm font-bold text-status-success">
-              {completedSP} SP ({completedPercent.toFixed(1)}%)
+              {completed} {unit} ({completedPercent.toFixed(1)}%)
             </span>
           </div>
           <div className="h-4 bg-bg-tertiary rounded-full overflow-hidden">
@@ -34,14 +49,14 @@ export function StoryPointsProgress({
           </div>
         </div>
 
-        {/* Remaining Story Points */}
+        {/* Remaining */}
         <div>
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium text-status-warning">
               Remaining
             </span>
             <span className="text-sm font-bold text-status-warning">
-              {remainingSP} SP ({remainingPercent.toFixed(1)}%)
+              {remaining} {unit} ({remainingPercent.toFixed(1)}%)
             </span>
           </div>
           <div className="h-4 bg-bg-tertiary rounded-full overflow-hidden">

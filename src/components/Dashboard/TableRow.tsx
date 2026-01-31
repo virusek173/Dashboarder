@@ -1,8 +1,9 @@
 'use client';
 
-import { RowData } from '@/types';
+import { RowData, ProgressMode } from '@/types';
 import { ProgressBar } from './ProgressBar';
 import { getWorkingDaysColor, formatDate, calculateWorkingDays } from '@/lib/calculations';
+import { PROGRESS_MODE } from '@/lib/constants';
 
 function buildJiraUrl(baseUrl: string | undefined, data: RowData): string | null {
   if (!baseUrl) return null;
@@ -32,15 +33,20 @@ interface TableRowProps {
   data: RowData;
   index: number;
   isLastRow?: boolean;
+  progressMode: ProgressMode;
 }
 
-export function TableRow({ data, index, isLastRow = false }: TableRowProps) {
+export function TableRow({ data, index, isLastRow = false, progressMode }: TableRowProps) {
   const workingDaysRemaining = Math.max(0, calculateWorkingDays(data.deadline));
   const daysColor = getWorkingDaysColor(workingDaysRemaining);
   const isEven = index % 2 === 0;
 
   const jiraBaseUrl = process.env.NEXT_PUBLIC_JIRA_BASE_URL;
   const jiraUrl = buildJiraUrl(jiraBaseUrl, data);
+
+  const currentProgress = progressMode === PROGRESS_MODE.STORY_POINTS
+    ? data.progressPercent
+    : data.ticketProgressPercent;
 
   return (
     <tr
@@ -81,7 +87,7 @@ export function TableRow({ data, index, isLastRow = false }: TableRowProps) {
         {workingDaysRemaining}
       </td>
       <td className={`px-4 py-3 ${isLastRow ? 'rounded-br-lg' : ''}`}>
-        <ProgressBar percent={data.progressPercent} />
+        <ProgressBar percent={currentProgress} />
       </td>
     </tr>
   );
