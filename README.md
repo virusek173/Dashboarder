@@ -69,10 +69,15 @@ npm start
 
 **Important:** When using Docker, update your `.env.local`:
 - Change `DATABASE_URL` to `file:/app/data/prod.db`
-- If using SOCKS proxy, change from `127.0.0.1` to `host.docker.internal`
-  ```env
-  SOCKS_PROXY_URL=socks5://host.docker.internal:1234
-  ```
+- If using SOCKS proxy running on your host machine:
+  - **macOS/Windows**: Use `host.docker.internal`
+    ```env
+    SOCKS_PROXY_URL=socks5://host.docker.internal:1234
+    ```
+  - **Linux**: Use `172.17.0.1` (Docker bridge IP)
+    ```env
+    SOCKS_PROXY_URL=socks5://172.17.0.1:1234
+    ```
 
 **Using Makefile (recommended):**
 ```bash

@@ -13,8 +13,8 @@ services:
         NEXT_PUBLIC_JIRA_BASE_URL: ${NEXT_PUBLIC_JIRA_BASE_URL}
     container_name: dashboarder-app
     restart: unless-stopped
-    # Use host network - container shares host's network stack (allows access to localhost:1234)
-    network_mode: host
+    ports:
+      - "3000:3000"
     env_file:
       - .env.local
     environment:
