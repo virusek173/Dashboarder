@@ -1,6 +1,10 @@
 # Build images
 build:
 	@echo "Building Docker images..."
+	docker compose --env-file .env.local build
+	
+build-fresh:
+	@echo "Building Docker images..."
 	docker compose --env-file .env.local build --no-cache
 
 # Start containers
