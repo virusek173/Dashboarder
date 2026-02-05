@@ -22,7 +22,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
           className={`px-6 py-2 rounded-lg font-medium transition-smooth ${
             activeTab === tab.id
               ? 'bg-primary-blue text-text-primary'
-              : 'bg-bg-secondary text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
+              : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
           }`}
         >
           {tab.label}

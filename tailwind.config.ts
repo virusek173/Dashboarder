@@ -10,29 +10,29 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          blue: "rgb(0, 138, 255)",
-          DEFAULT: "rgb(0, 138, 255)",
+          blue: "#3b82f6",
+          DEFAULT: "#3b82f6",
         },
         secondary: {
-          blue: "rgb(50, 121, 181)",
-          DEFAULT: "rgb(50, 121, 181)",
+          blue: "#60a5fa",
+          DEFAULT: "#60a5fa",
         },
         tertiary: {
-          blue: "rgb(54, 87, 115)",
-          DEFAULT: "rgb(54, 87, 115)",
+          blue: "#4770a1",
+          DEFAULT: "#4770a1",
         },
         accent: {
-          cyan: "#0098db",
-          DEFAULT: "#0098db",
+          cyan: "#06b6d4",
+          DEFAULT: "#06b6d4",
         },
         deep: {
-          navy: "#002664",
-          DEFAULT: "#002664",
+          navy: "#1e3a8a",
+          DEFAULT: "#1e3a8a",
         },
         bg: {
-          primary: "#1a1f2e",
-          secondary: "#232938",
-          tertiary: "#2d3548",
+          primary: "#0f1419",
+          secondary: "#1a1f2e",
+          tertiary: "#252d3d",
         },
         text: {
           primary: "#f9fafb",

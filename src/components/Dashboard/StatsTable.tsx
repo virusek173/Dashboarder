@@ -35,7 +35,7 @@ export function StatsTable({ data, showSummary = true, progressMode }: StatsTabl
 
   return (
     <div>
-      <div className="overflow-x-auto overflow-y-visible">
+      <div className="overflow-x-auto overflow-y-visible border border-tertiary-blue rounded-t-lg">
         <table className="w-full border-collapse">
         <thead>
           <tr className="bg-deep-navy border-b border-tertiary-blue">
@@ -101,7 +101,7 @@ export function StatsTable({ data, showSummary = true, progressMode }: StatsTabl
                 />
               ))}
               {showSummary && (
-                <tr className="bg-deep-navy border-y-2 border-tertiary font-semibold">
+                <tr className="bg-deep-navy border-y border-tertiary font-semibold">
                   <td className="px-4 py-3 text-left text-text-primary">
                     {summaryUrl ? (
                       <a

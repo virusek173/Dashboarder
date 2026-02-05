@@ -29,7 +29,7 @@ export function StoryPointsProgress({
   const remainingPercent = total > 0 ? (remaining / total) * 100 : 0;
 
   return (
-    <div className="p-6 bg-bg-secondary rounded-lg">
+    <div className="p-6 bg-bg-secondary border border-tertiary-blue border-t-0 rounded-b-lg">
       <div className="space-y-4">
         {/* Completed */}
         <div>
