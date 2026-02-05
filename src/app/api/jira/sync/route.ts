@@ -1,16 +1,46 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { fetchTicketsByLabels, processRowData } from "@/lib/jira";
 import { saveSnapshot } from "@/lib/snapshots";
-import { tabsConfig } from "@/tabConfig/tabConfig";
+import { getTabConfig } from "@/config";
 import { RowData } from "@/types";
+import { prisma } from "@/lib/prisma";
+
+// Force dynamic rendering for this route (uses searchParams)
+export const dynamic = 'force-dynamic';
 
 /**
- * POST /api/jira/sync
- * Fetches all data from JIRA and saves to database
+ * POST /api/jira/sync?teamSlug=team1&release=R1
+ * Fetches all data from JIRA and saves to database for specific team and release
  * Returns the complete snapshot with both tabs
  */
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const teamSlug = searchParams.get("teamSlug");
+    const release = searchParams.get("release");
+
+    if (!teamSlug || !release) {
+      return NextResponse.json(
+        { error: "Missing required parameters: teamSlug and release" },
+        { status: 400 }
+      );
+    }
+
+    // Find team by slug
+    const team = await prisma.team.findUnique({
+      where: { slug: teamSlug },
+    });
+
+    if (!team) {
+      return NextResponse.json(
+        { error: `Team "${teamSlug}" not found` },
+        { status: 404 }
+      );
+    }
+
+    // Load configuration for this team+release
+    const tabsConfig = getTabConfig(teamSlug, release);
+
     // Get all unique labels from all tabs
     const allLabels = Array.from(
       new Set(tabsConfig.flatMap((tab) => tab.rows.flatMap((row) => row.jiraLabels)))
@@ -18,7 +48,6 @@ export async function POST() {
 
     // Fetch all tickets in one request
     const allTickets = await fetchTicketsByLabels(allLabels);
-
     // Process data for each tab
     const result: Record<string, RowData[]> = {};
 
@@ -49,10 +78,10 @@ export async function POST() {
       result[tabConfig.id] = rowsData;
     }
 
-    // Save to database
+    // Save to database with team and release
     const displays = result["displays"] || [];
     const features = result["features"] || [];
-    await saveSnapshot(displays, features);
+    await saveSnapshot(displays, features, team.id, release);
 
     return NextResponse.json({
       timestamp: new Date().toISOString(),

@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 import { RowData } from "@/types";
-import { tabsConfig } from "@/tabConfig/tabConfig";
+import { getTabConfig } from "@/config";
 
 // Database row type (matches Prisma schema)
 interface DbSnapshotRow {
@@ -30,13 +30,14 @@ function getTodayMidnight(): Date {
 }
 
 /**
- * Get the latest snapshot from database
+ * Get the latest snapshot from database for specific team and release
  * Returns null if no snapshots exist
  */
-export async function getLatestSnapshot() {
+export async function getLatestSnapshot(teamId: string, release: string) {
   const snapshot = await prisma.snapshot.findFirst({
+    where: { teamId, release },
     orderBy: { date: "desc" },
-    include: { rows: true },
+    include: { rows: true, team: true },
   });
 
   if (!snapshot) return null;
@@ -46,11 +47,11 @@ export async function getLatestSnapshot() {
 
   const displays = rows
     .filter((row) => row.tabId === "displays")
-    .map((row) => transformRowToRowData(row, "displays"));
+    .map((row) => transformRowToRowData(row, "displays", snapshot.team.slug, snapshot.release));
 
   const features = rows
     .filter((row) => row.tabId === "features")
-    .map((row) => transformRowToRowData(row, "features"));
+    .map((row) => transformRowToRowData(row, "features", snapshot.team.slug, snapshot.release));
 
   return {
     id: snapshot.id,
@@ -61,19 +62,27 @@ export async function getLatestSnapshot() {
 }
 
 /**
- * Save a new snapshot or update today's snapshot
+ * Save a new snapshot or update today's snapshot for specific team and release
  * If snapshot for today already exists, it updates it
  * Otherwise creates a new one
  */
 export async function saveSnapshot(
   displays: RowData[],
-  features: RowData[]
+  features: RowData[],
+  teamId: string,
+  release: string
 ) {
   const today = getTodayMidnight();
 
-  // Check if today's snapshot exists
+  // Check if today's snapshot exists for this team+release
   const existingSnapshot = await prisma.snapshot.findUnique({
-    where: { date: today },
+    where: {
+      date_teamId_release: {
+        date: today,
+        teamId,
+        release,
+      },
+    },
   });
 
   if (existingSnapshot) {
@@ -101,6 +110,8 @@ export async function saveSnapshot(
     const snapshot = await prisma.snapshot.create({
       data: {
         date: today,
+        teamId,
+        release,
         rows: {
           create: [
             ...displays.map((row) => transformRowDataToDbCreate(row, "displays")),
@@ -126,8 +137,9 @@ function transformRowToRowData(row: {
   ticketProgressPercent: number;
   workingDaysRemaining: number;
   deadline: Date;
-}, tabId: string): RowData {
-  // Get config data for this row
+}, tabId: string, teamSlug: string, release: string): RowData {
+  // Get config data for this row using team-specific configuration
+  const tabsConfig = getTabConfig(teamSlug, release);
   const tabConfig = tabsConfig.find(tab => tab.id === tabId);
   const rowConfig = tabConfig?.rows.find(r => r.id === row.rowId);
 

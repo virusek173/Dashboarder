@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchTicketsByLabels, processRowData } from "@/lib/jira";
-import { tabsConfig } from "@/tabConfig/tabConfig";
+import { getTabConfig } from "@/config";
 import { RowData } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
-    const { tabId } = await request.json();
+    const { tabId, teamSlug, release } = await request.json();
 
-    if (!tabId) {
+    if (!tabId || !teamSlug || !release) {
       return NextResponse.json(
-        { error: "Tab ID is required" },
+        { error: "Tab ID, team slug, and release are required" },
         { status: 400 }
       );
     }
 
+    const tabsConfig = getTabConfig(teamSlug, release);
     const tabConfig = tabsConfig.find((tab) => tab.id === tabId);
 
     if (!tabConfig) {

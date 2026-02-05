@@ -9,22 +9,26 @@ import { ProgressModeSwitch } from "./ProgressModeSwitch";
 import { useJiraData } from "@/hooks/useJiraData";
 import { useCachedData } from "@/hooks/useCachedData";
 import { formatTimestamp } from "@/lib/calculations";
-import { tabsConfig } from "@/tabConfig/tabConfig";
 import { PROGRESS_MODE } from "@/lib/constants";
+import { TeamProvider, useTeamContext } from "@/contexts/TeamContext";
+import { TeamTabs } from "@/components/TeamTabs";
+import { ReleaseSelector } from "@/components/ReleaseSelector";
+import { getTabConfig } from "@/config";
 
-const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || "";
-const releaseNumber = process.env.NEXT_PUBLIC_RELEASE_NUMBER || "";
-const teamIcon = process.env.NEXT_PUBLIC_TEAM_ICON || "";
+const projectName = process.env.NEXT_PUBLIC_PROJECT_NAME || "PROJECT";
 
-export function Dashboard() {
+function DashboardContent() {
+  const { currentTeamSlug, currentRelease } = useTeamContext();
   const [activeTab, setActiveTab] = useState<TabType>("displays");
   const [displaysData, setDisplaysData] = useState<RowData[]>([]);
   const [featuresData, setFeaturesData] = useState<RowData[]>([]);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
   const [progressMode, setProgressMode] = useState<ProgressMode>(PROGRESS_MODE.STORY_POINTS);
 
-  const { loading: syncing, error, syncAllData } = useJiraData();
-  const { cachedData, loading: initialLoading } = useCachedData();
+  const { loading: syncing, error, syncAllData } = useJiraData(currentTeamSlug, currentRelease);
+  const { cachedData, loading: initialLoading } = useCachedData(currentTeamSlug, currentRelease);
+
+  const tabsConfig = getTabConfig(currentTeamSlug, currentRelease) || [];
 
   // Load data from database on mount
   useEffect(() => {
@@ -48,26 +52,33 @@ export function Dashboard() {
   };
 
   const currentData = activeTab === 'displays' ? displaysData : featuresData;
-  const currentTabConfig = tabsConfig.find(tab => tab.id === activeTab);
+  const currentTabConfig = tabsConfig?.find(tab => tab.id === activeTab);
   const showSummary = currentTabConfig?.showSummary ?? true;
 
   return (
     <div className="min-h-screen bg-bg-primary p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-text-primary flex items-center gap-2">
-            {teamIcon && <span>{teamIcon}</span>}
-            {teamName} TEAM RELEASE {releaseNumber} PROGRESS DASHBOARD
-          </h1>
-          <div className="flex items-center gap-4">
-            {lastUpdate && (
-              <div className="text-sm text-text-secondary">
-                Data from: {formatTimestamp(lastUpdate)}
-              </div>
-            )}
-            <RefreshButton onClick={handleRefresh} loading={syncing} />
+        <h1 className="text-4xl font-bold text-text-primary mb-6 text-center">
+          {projectName} PROGRESS DASHBOARD
+        </h1>
+
+        <div className="mb-4">
+          <div className="flex items-center justify-between">
+            <TeamTabs />
+            <div className="flex items-center gap-4">
+              <ReleaseSelector />
+              <RefreshButton onClick={handleRefresh} loading={syncing} />
+            </div>
           </div>
         </div>
+
+        {lastUpdate && (
+          <div className="flex items-center justify-end mb-8">
+            <div className="text-sm text-text-secondary">
+              Data from: {formatTimestamp(lastUpdate)}
+            </div>
+          </div>
+        )}
 
         <div className="mb-6 flex items-center justify-between">
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
@@ -92,5 +103,13 @@ export function Dashboard() {
         )}
       </div>
     </div>
+  );
+}
+
+export function Dashboard() {
+  return (
+    <TeamProvider>
+      <DashboardContent />
+    </TeamProvider>
   );
 }

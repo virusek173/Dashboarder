@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "team-alpha",
+    "name": "Team Alpha",
+    "icon": "🚀"
+  },
+  {
+    "slug": "team-beta",
+    "name": "Team Beta",
+    "icon": "⚡"
+  }
+]

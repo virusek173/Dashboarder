@@ -53,16 +53,19 @@ NEXT_PUBLIC_TEAM_ICON=🚀
 
    `host.docker.internal` is a special hostname that points to the host machine (your computer) from inside the Docker container.
 
-### 2. Tab Configuration
+### 2. Configuration Files
 
-Before the first build, make sure you have the `src/data/tabConfig.ts` file:
+Before the first build, make sure you have the configuration files:
 
 ```bash
-# If you don't have it, copy from example
-cp src/data/tabConfig.example.ts src/data/tabConfig.ts
+# Copy teams configuration
+cp src/config/teams.example.json src/config/teams.json
+
+# Copy tab configurations
+cp src/config/tabs.example.json src/config/tabs.json
 ```
 
-**Important:** The `tabConfig.ts` file is copied into the Docker image during build. After changes to this file, you must rebuild the image:
+**Important:** The configuration files are copied into the Docker image during build. After changes to these files, you must rebuild the image:
 
 ```bash
 docker-compose up -d --build

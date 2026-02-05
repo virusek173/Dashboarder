@@ -33,20 +33,22 @@ JIRA_STORY_POINTS_FIELD=customfield
 JIRA_RESOLVED_STATUS=Solved
 SOCKS_PROXY_URL=socks5://127.0.0.1:1234  # Optional: omit if direct connection to JIRA is available
 
-# Team configuration
-NEXT_PUBLIC_TEAM_NAME=TEAM
-NEXT_PUBLIC_RELEASE_NUMBER=1
-NEXT_PUBLIC_TEAM_ICON=🚀
+# Project configuration
+NEXT_PUBLIC_PROJECT_NAME=PROJECT
 NEXT_PUBLIC_JIRA_BASE_URL=https://your-jira-server.com
 ```
 
-3. Copy `tabConfig/tabConfig.example.ts` to `tabConfig/tabConfig.ts`:
+3. Copy configuration files:
 
 ```bash
-cp tabConfig/tabConfig.example.ts tabConfig/tabConfig.ts
+# Teams configuration
+cp src/config/teams.example.json src/config/teams.json
+
+# Tab configurations per team/release
+cp src/config/tabs.example.json src/config/tabs.json
 ```
 
-4. Customize your project-specific tabs, deadlines and labels in `tabConfig/tabConfig.ts`
+4. Customize your teams in `src/config/teams.json` and tab configurations in `src/config/tabs.json`
 
 ## Authentication
 
@@ -145,65 +147,87 @@ src/
 │   └── globals.css       # Global styles
 ├── components/
 │   └── Dashboard/        # Dashboard components
+├── config/               # Configuration files
+│   ├── teams.json        # Teams configuration
+│   ├── tabs.json         # Tab configurations per team/release
+│   └── index.ts          # Config getters
 ├── hooks/                # React hooks
 ├── lib/                  # Libraries and helpers
 └── types/                # TypeScript types
-tabConfig/                # Configuration (tabConfig.ts)
 ```
 
-## Tab Configuration
+## Configuration
 
-Edit `tabConfig/tabConfig.ts` to configure your project-specific tabs:
+### Teams Configuration
 
-### Tab Settings
-```typescript
+Edit `src/config/teams.json` to configure your teams:
+```json
+[
+  {
+    "slug": "team-alpha",
+    "name": "Team Alpha",
+    "icon": "🚀"
+  }
+]
+```
+
+### Tab Configuration
+
+Edit `src/config/tabs.json` to configure tabs for each team and release:
+
+### Configuration Structure
+```json
 {
-  id: "displays",
-  label: "Displays",
-  showSummary: true, // Show summary row and progress bars (default: true)
-  rows: [...]
+  "team-slug-release": [
+    {
+      "id": "displays",
+      "label": "Displays",
+      "showSummary": true,
+      "rows": [...]
+    }
+  ]
 }
 ```
 
 ### Basic Row Configuration
-```typescript
+```json
 {
-  id: "unique-id",
-  label: "Display Name",
-  jiraLabels: ["label1", "label2"], // Tickets with ANY of these labels
-  deadline: "2026-12-31", // Format: YYYY-MM-DD
+  "id": "unique-id",
+  "label": "Display Name",
+  "jiraLabels": ["label1", "label2"],
+  "deadline": "2026-12-31"
 }
 ```
 
 ### Advanced Filtering
-```typescript
+```json
 {
-  id: "advanced-example",
-  label: "Advanced Example",
-  jiraLabels: ["required-label"],
-  requireAllLabels: true, // Ticket must have ALL labels (AND logic)
-  excludeLabels: ["excluded-label"], // Ticket must NOT have these labels (NOT logic)
-  deadline: "2026-12-31",
+  "id": "advanced-example",
+  "label": "Advanced Example",
+  "jiraLabels": ["required-label"],
+  "requireAllLabels": true,
+  "excludeLabels": ["excluded-label"],
+  "deadline": "2026-12-31"
 }
 ```
 
-See `tabConfig/tabConfig.example.ts` for more examples.
+See `src/config/tabs.example.json` for more examples.
 
 ## Features
 
-- 📊 Two tabs: Displays and Features
+- 📊 Multiple teams and releases support
+- 📊 Configurable tabs per team/release
 - ✅ Track completed tickets and Story Points
 - 📅 Display deadlines and remaining working days
 - 📈 Progress bar with color coding (green >80%, yellow 50-80%, red <50%)
 - 📊 Story Points progress bars (completed vs remaining)
 - 💪 Motivational messages based on progress
-- 💾 Data caching in localStorage
+- 💾 Data caching in database
 - 🔄 Refresh button to update data
 - ⏱️ Timestamp of last data fetch
-- ⚙️ Configurable team name and release number
-- 🎨 Customizable team icon (emoji or image URL) for header and favicon
-- 📄 Dynamic page title based on team name
+- 📄 Dynamic page title based on project name
 - 🔧 Per-tab summary visibility control
+- 🔀 Toggle between Story Points and Tickets view
 
 ## Notes
 

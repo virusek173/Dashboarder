@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { DynamicFavicon } from '@/components/DynamicFavicon';
 
-const teamName = process.env.NEXT_PUBLIC_TEAM_NAME || 'Team';
-const capitalizedTeamName = teamName.charAt(0).toUpperCase() + teamName.slice(1).toLowerCase();
+const projectName = process.env.NEXT_PUBLIC_PROJECT_NAME || 'PROJECT';
 
 export const metadata: Metadata = {
-  title: `${capitalizedTeamName} Progress Dashboard`,
+  title: `${projectName} Progress Dashboard`,
   description: 'Dashboard for tracking development team progress with JIRA integration',
 };
 

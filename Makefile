@@ -11,7 +11,7 @@ build-fresh:
 up:
 	@echo "Starting containers..."
 	docker compose --env-file .env.local up -d
-	@echo "Application running at http://localhost:3000"
+	@echo "Application running in Docker..."
 
 # Stop containers
 down:

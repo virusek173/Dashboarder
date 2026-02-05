@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import { CachedData } from "@/types";
 
 /**
- * Hook for loading cached data from database via API
+ * Hook for loading cached data from database via API for specific team and release
  */
-export function useCachedData() {
+export function useCachedData(teamSlug: string, release: string) {
   const [cachedData, setCachedData] = useState<CachedData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadFromDatabase();
-  }, []);
+  }, [teamSlug, release]);
 
   const loadFromDatabase = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/snapshots");
+      const params = new URLSearchParams({ teamSlug, release });
+      const response = await fetch(`/api/snapshots?${params}`);
 
       if (response.ok) {
         const data = await response.json();

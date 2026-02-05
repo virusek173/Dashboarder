@@ -1,0 +1,30 @@
+{
+  "team-slug-release": [
+    {
+      "id": "displays",
+      "label": "Displays",
+      "showSummary": true,
+      "rows": [
+        {
+          "id": "example-row",
+          "label": "Example Row",
+          "jiraLabels": ["example-label"],
+          "deadline": "2026-12-31"
+        }
+      ]
+    },
+    {
+      "id": "features",
+      "label": "Features",
+      "showSummary": false,
+      "rows": [
+        {
+          "id": "example-feature",
+          "label": "Example Feature",
+          "jiraLabels": ["example-label"],
+          "deadline": "2026-12-31"
+        }
+      ]
+    }
+  ]
+}

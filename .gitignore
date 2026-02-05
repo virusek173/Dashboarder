@@ -15,10 +15,14 @@
 .env.local
 
 # project-specific configuration
-/tabConfig/tabConfig.ts
+/src/config/teams.json
+/src/config/tabs.json
 
 # typescript
 next-env.d.ts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
 
 team-progress-dashboard.md
 

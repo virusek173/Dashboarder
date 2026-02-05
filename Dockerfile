@@ -56,7 +56,7 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/src/generated ./src/generated
-COPY --from=builder /app/tabConfig ./tabConfig
+COPY --from=builder /app/src/config ./src/config
 COPY --from=builder /app/package*.json ./
 
 # Create directory for SQLite database and install Prisma CLI for migrations

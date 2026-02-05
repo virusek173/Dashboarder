@@ -7,12 +7,12 @@ interface SyncResult {
   timestamp: string;
 }
 
-export function useJiraData() {
+export function useJiraData(teamSlug: string, release: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Sync all data from JIRA and save to database
+   * Sync all data from JIRA and save to database for specific team and release
    * Returns data for both tabs in one request
    */
   const syncAllData = useCallback(async (): Promise<SyncResult> => {
@@ -20,7 +20,8 @@ export function useJiraData() {
     setError(null);
 
     try {
-      const response = await fetch("/api/jira/sync", {
+      const params = new URLSearchParams({ teamSlug, release });
+      const response = await fetch(`/api/jira/sync?${params}`, {
         method: "POST",
       });
 
@@ -42,7 +43,7 @@ export function useJiraData() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [teamSlug, release]);
 
   return {
     loading,

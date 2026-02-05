@@ -11,13 +11,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Team represents a dashboard team
+model Team {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  slug      String     @unique // URL-friendly: "team-name"
+  name      String              // Display: "Team Name"
+  icon      String?             // Emoji: "🧨"
+  isActive  Boolean    @default(true)
+
+  snapshots Snapshot[]
+}
+
 // Snapshot represents a daily data snapshot from JIRA
-// Each day has exactly one snapshot
+// Each team+release has one snapshot per day
 model Snapshot {
   id        String        @id @default(cuid())
   createdAt DateTime      @default(now())
-  date      DateTime      @unique               // One snapshot per day
+  date      DateTime
+
+  team      Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String
+
+  release   String        // e.g., "R1" - release number
+
   rows      SnapshotRow[]
+
+  @@unique([date, teamId, release])
+  @@index([teamId])
+  @@index([date])
+  @@index([release])
 }
 
 // SnapshotRow stores statistics for a single row (e.g., "Feature A")
