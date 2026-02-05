@@ -18,7 +18,7 @@ import { getTabConfig } from "@/config";
 const projectName = process.env.NEXT_PUBLIC_PROJECT_NAME || "PROJECT";
 
 function DashboardContent() {
-  const { currentTeamSlug, currentRelease } = useTeamContext();
+  const { currentTeamSlug, currentRelease, availableReleases } = useTeamContext();
   const [activeTab, setActiveTab] = useState<TabType>("displays");
   const [displaysData, setDisplaysData] = useState<RowData[]>([]);
   const [featuresData, setFeaturesData] = useState<RowData[]>([]);
@@ -36,8 +36,18 @@ function DashboardContent() {
       setDisplaysData(cachedData.data.displays);
       setFeaturesData(cachedData.data.features);
       setLastUpdate(cachedData.timestamp);
+    } else {
+      // Clear data when switching to team with no data
+      setDisplaysData([]);
+      setFeaturesData([]);
+      setLastUpdate(null);
     }
   }, [cachedData]);
+
+  // Reset to displays tab when team changes
+  useEffect(() => {
+    setActiveTab("displays");
+  }, [currentTeamSlug]);
 
   // Refresh: fetch from JIRA and save to database
   const handleRefresh = async () => {
@@ -58,49 +68,50 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-bg-primary p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-text-primary mb-6 text-center">
-          {projectName} PROGRESS DASHBOARD
-        </h1>
+        <div className="bg-bg-secondary shadow-lg rounded-lg overflow-hidden">
+          <div className="px-6 py-5 border-b border-tertiary-blue bg-bg-tertiary text-center">
+            <h1 className="text-3xl font-bold text-text-primary whitespace-nowrap">
+              {projectName} <span className="text-text-secondary font-medium">· Progress Dashboard</span>
+            </h1>
+          </div>
 
-        <div className="mb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-tertiary-blue">
             <TeamTabs />
             <div className="flex items-center gap-4">
-              <ReleaseSelector />
+              {lastUpdate && (
+                <div className="text-xs text-text-secondary">
+                  {formatTimestamp(lastUpdate)}
+                </div>
+              )}
+              {availableReleases.length > 1 && <ReleaseSelector />}
               <RefreshButton onClick={handleRefresh} loading={syncing} />
             </div>
           </div>
-        </div>
 
-        {lastUpdate && (
-          <div className="flex items-center justify-end mb-8">
-            <div className="text-sm text-text-secondary">
-              Data from: {formatTimestamp(lastUpdate)}
+          <div className="mb-6 px-6 pt-6 flex items-center justify-between">
+            <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+            <ProgressModeSwitch mode={progressMode} onChange={setProgressMode} />
+          </div>
+
+          {error && (
+            <div className="mb-4 mx-6 p-4 bg-status-danger bg-opacity-10 border border-status-danger rounded-lg text-status-danger">
+              <p className="font-medium">Error fetching data:</p>
+              <p className="text-sm">{error}</p>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="mb-6 flex items-center justify-between">
-          <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-          <ProgressModeSwitch mode={progressMode} onChange={setProgressMode} />
+          {(syncing || initialLoading) && !currentData.length ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-text-secondary">Loading data...</div>
+            </div>
+          ) : (
+            <div className="px-6 pb-6">
+              <div className="border border-tertiary-blue rounded-lg overflow-hidden">
+                <StatsTable data={currentData} showSummary={showSummary} progressMode={progressMode} />
+              </div>
+            </div>
+          )}
         </div>
-
-        {error && (
-          <div className="mb-4 p-4 bg-status-danger bg-opacity-10 border border-status-danger rounded-lg text-status-danger">
-            <p className="font-medium">Error fetching data:</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
-
-        {(syncing || initialLoading) && !currentData.length ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-text-secondary">Loading data...</div>
-          </div>
-        ) : (
-          <div className="bg-bg-secondary border-2 border-tertiary-blue rounded-lg overflow-visible">
-            <StatsTable data={currentData} showSummary={showSummary} progressMode={progressMode} />
-          </div>
-        )}
       </div>
     </div>
   );

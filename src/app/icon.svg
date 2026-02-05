@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background -->
+  <rect width="100" height="100" rx="20" fill="#1e3a8a"/>
+
+  <!-- Rocket group (rotated 25 degrees, bigger) -->
+  <g transform="translate(50, 50) rotate(25) translate(-50, -50)">
+    <!-- Rocket body (much bigger) -->
+    <ellipse cx="50" cy="42" rx="18" ry="35" fill="#3b82f6"/>
+
+    <!-- Rocket tip -->
+    <path d="M 50 5 L 32 35 L 68 35 Z" fill="#60a5fa"/>
+
+    <!-- Window -->
+    <circle cx="50" cy="36" r="8" fill="#1e3a8a"/>
+    <circle cx="50" cy="36" r="6.5" fill="#bfdbfe"/>
+
+    <!-- Wings -->
+    <path d="M 32 58 L 20 76 L 32 72 Z" fill="#2563eb"/>
+    <path d="M 68 58 L 80 76 L 68 72 Z" fill="#2563eb"/>
+
+    <!-- Fire/Exhaust (much bigger) -->
+    <ellipse cx="50" cy="80" rx="16" ry="10" fill="#f97316"/>
+    <ellipse cx="50" cy="88" rx="12" ry="8" fill="#fb923c"/>
+    <ellipse cx="50" cy="94" rx="8" ry="6" fill="#fdba74"/>
+
+    <!-- Bright center -->
+    <ellipse cx="50" cy="81" rx="8" ry="5" fill="#fff" opacity="0.8"/>
+  </g>
+</svg>
